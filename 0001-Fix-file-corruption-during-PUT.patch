@@ -1,0 +1,27 @@
+From 4205e57f83752f664bef00aed484eb701c07d702 Mon Sep 17 00:00:00 2001
+From: Vinicius Costa Gomes <vinicius.gomes@openbossa.org>
+Date: Fri, 5 Mar 2010 17:12:58 -0300
+Subject: [PATCH 1/2] Fix file corruption during PUT
+
+In some cases file corruption would occur, because the order of
+the arguments to memmove was inverted.
+---
+ client/session.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/client/session.c b/client/session.c
+index 9948a4a..8ff2d48 100644
+--- a/client/session.c
++++ b/client/session.c
+@@ -1223,7 +1223,7 @@ static void put_xfer_progress(GwObexXfer *xfer, gpointer user_data)
+ 
+ 	session->filled = (session->filled + len) - written;
+ 
+-	memmove(session->buffer + written, session->buffer, session->filled);
++	memmove(session->buffer, session->buffer + written, session->filled);
+ 
+ 	session->transferred += written;
+ 
+-- 
+1.6.6.1
+
